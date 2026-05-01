@@ -46,7 +46,7 @@ vi.mock("motion/react", async () => {
 
 // Mock SpecForgeLogo since it has no deps
 vi.mock("@/components/nav/spec-forge-logo", () => ({
-  SpecForgeLogo: () => <div data-testid="spec-forge-logo" />,
+  XernLogo: () => <div data-testid="spec-forge-logo" />,
 }));
 
 import { PublicNavbar } from "./public-navbar";
