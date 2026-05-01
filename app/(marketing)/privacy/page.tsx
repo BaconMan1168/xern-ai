@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { LegalPageLayout, LegalSection } from "@/components/marketing/legal-page-layout";
 import type { TocItem } from "@/components/marketing/legal-page-layout";
+import { SITE_URL, SITE_NAME } from "@/lib/seo";
 
-export const metadata = {
-  title: "Privacy Policy — Xern AI",
-  description: "How Xern AI collects, uses, and protects your personal information.",
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: `How ${SITE_NAME} collects, uses, and protects your personal information.`,
+  alternates: { canonical: `${SITE_URL}/privacy` },
+  openGraph: {
+    url: `${SITE_URL}/privacy`,
+    title: `Privacy Policy — ${SITE_NAME}`,
+    description: `How ${SITE_NAME} collects, uses, and protects your personal information.`,
+  },
+  robots: { index: true, follow: true },
 };
 
 const EFFECTIVE_DATE = "April 25, 2026";

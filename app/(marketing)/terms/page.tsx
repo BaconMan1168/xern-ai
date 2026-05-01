@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { LegalPageLayout, LegalSection } from "@/components/marketing/legal-page-layout";
 import type { TocItem } from "@/components/marketing/legal-page-layout";
+import { SITE_URL, SITE_NAME } from "@/lib/seo";
 
-export const metadata = {
-  title: "Terms of Service — Xern AI",
-  description: "The terms and conditions governing your use of Xern AI.",
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: `The terms and conditions governing your use of ${SITE_NAME}.`,
+  alternates: { canonical: `${SITE_URL}/terms` },
+  openGraph: {
+    url: `${SITE_URL}/terms`,
+    title: `Terms of Service — ${SITE_NAME}`,
+    description: `The terms and conditions governing your use of ${SITE_NAME}.`,
+  },
+  robots: { index: true, follow: true },
 };
 
 const EFFECTIVE_DATE = "April 25, 2026";

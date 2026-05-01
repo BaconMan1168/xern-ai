@@ -1,7 +1,13 @@
 // app/login/page.tsx
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { LoginForm } from "@/components/auth/login-form";
 import { XernLogo } from "@/components/nav/spec-forge-logo";
+
+export const metadata: Metadata = {
+  title: "Sign in",
+  robots: { index: false, follow: false },
+};
 
 export default function LoginPage() {
   return (
