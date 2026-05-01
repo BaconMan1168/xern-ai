@@ -39,7 +39,10 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/terms") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/api/billing/");
+    pathname.startsWith("/api/billing/") ||
+    pathname === "/llms.txt" ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml";
 
   if (!user && !isPublicPath) {
     const url = request.nextUrl.clone();
@@ -53,6 +56,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml|ico)$).*)",
   ],
 };
