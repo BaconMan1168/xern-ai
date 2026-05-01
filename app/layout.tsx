@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     images: [
       {
-        url: "/web-app-manifest-512x512.png",
+        url: `${SITE_URL}/web-app-manifest-512x512.png`,
         width: 512,
         height: 512,
         alt: "Xern AI",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
-    images: ["/web-app-manifest-512x512.png"],
+    images: [`${SITE_URL}/web-app-manifest-512x512.png`],
   },
   icons: {
     icon: [

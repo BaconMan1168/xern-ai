@@ -8,12 +8,12 @@ import { CtaSection } from "@/components/marketing/cta-section";
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: SITE_NAME,
+  title: { absolute: "Xern AI — Turn Customer Feedback into Product Specs" },
   description: SITE_DESCRIPTION,
   alternates: { canonical: SITE_URL },
   openGraph: {
     url: SITE_URL,
-    title: SITE_NAME,
+    title: "Xern AI — Turn Customer Feedback into Product Specs",
     description: SITE_DESCRIPTION,
   },
 };
