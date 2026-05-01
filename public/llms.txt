@@ -1,0 +1,51 @@
+# Xern AI
+
+> Xern AI turns customer feedback into structured feature proposals using AI.
+
+## What is Xern AI?
+
+Xern AI is an AI-powered product discovery tool for product managers and founders.
+You upload customer feedback files (PDFs, DOCX, TXT, CSV, JSON, Markdown) or paste
+text, and Xern AI synthesises the feedback into themes, extracts representative
+quotes, and generates ready-to-use product spec proposals — all exportable as Markdown.
+
+## Who is it for?
+
+- Product managers who want to turn user research and support tickets into feature specs
+- Founders processing early-stage customer feedback
+- Anyone who needs to synthesise qualitative feedback into actionable product decisions
+
+## Key capabilities
+
+- Upload up to 20 files per project (PDF, DOCX, TXT, CSV, JSON, Markdown)
+- AI synthesis: themes, representative user quotes, conflict signal detection
+- Proposal generation: structured feature cards with rationale and supporting evidence
+- Markdown export for each proposal
+- Re-run analysis after adding more feedback
+- Conflict signal detection: flags when feedback contains contradictory signals
+
+## Pricing
+
+| Plan | Price | Projects/month | Files/project |
+|------|-------|---------------|---------------|
+| Free | $0 | 2 | 5 |
+| Pro | $9/mo | 20 | 10 |
+| Max | $19/mo | Unlimited | 20 |
+
+Free plan projects expire after 7 days. Pro and Max plans have indefinite persistence.
+
+## Tech stack
+
+Built with Next.js 15, Supabase (auth + database), Anthropic Claude (AI pipeline),
+Stripe (billing), and deployed on Vercel.
+
+## Contact
+
+- Website: https://xernai.com
+- Email: xernai.app@gmail.com
+
+## Important notes
+
+- Xern AI does NOT use your uploaded content to train or fine-tune any AI model
+- Content is processed solely to produce outputs for you
+- Payment processing is handled by Stripe; card details are never stored by Xern AI
