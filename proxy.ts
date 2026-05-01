@@ -2,7 +2,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Skip proxy for any request with a file extension (static public files).
+// This is the canonical Next.js 16 pattern — see proxy.mdx docs.
+const PUBLIC_FILE = /\.(.*)$/;
+
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_FILE.test(pathname)) {
+    return NextResponse.next();
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -31,7 +41,6 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
   const isPublicPath =
     pathname === "/" ||
     pathname.startsWith("/pricing") ||
