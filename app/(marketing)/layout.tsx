@@ -12,8 +12,10 @@ export default async function MarketingLayout({
   return (
     <div className="relative min-h-screen bg-[var(--color-bg-0)]">
       <ShapesBackground />
-      <PublicNavbar userEmail={user?.email ?? null} />
-      <div className="relative z-10">{children}</div>
+      <header>
+        <PublicNavbar userEmail={user?.email ?? null} />
+      </header>
+      <main className="relative z-10">{children}</main>
     </div>
   );
 }

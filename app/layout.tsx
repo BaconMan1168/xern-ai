@@ -14,26 +14,18 @@ export const metadata: Metadata = {
     template: `%s — ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    images: [
-      {
-        url: `${SITE_URL}/web-app-manifest-512x512.png`,
-        width: 512,
-        height: 512,
-        alt: "Xern AI",
-      },
-    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/web-app-manifest-512x512.png`],
   },
   icons: {
     icon: [
@@ -42,6 +34,7 @@ export const metadata: Metadata = {
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon.ico" },
     ],
+    apple: [{ url: "/web-app-manifest-192x192.png", sizes: "192x192", type: "image/png" }],
   },
 };
 

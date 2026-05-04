@@ -20,7 +20,7 @@ export function HeroSection({ isAuthenticated = false }: { isAuthenticated?: boo
 
       <div className="w-full">
         {/* Staggered headline — line 1 left, line 2 right */}
-        <div className="mb-14">
+        <h1 className="mb-14">
           <motion.span
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -43,7 +43,7 @@ export function HeroSection({ isAuthenticated = false }: { isAuthenticated?: boo
           >
             to Actionable Specs
           </motion.span>
-        </div>
+        </h1>
 
         {/* Bottom row: subtext left, CTAs right */}
         <motion.div
