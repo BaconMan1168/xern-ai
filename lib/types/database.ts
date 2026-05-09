@@ -21,6 +21,7 @@ export type FeedbackFile = {
   mime_type: string | null;
   input_method: InputMethod;
   word_count: number | null;
+  customer_notes?: string | null;
   created_at: string;
 };
 

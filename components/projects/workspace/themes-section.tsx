@@ -6,13 +6,24 @@ import type { Insight } from "@/lib/types/database";
 import { QuotesModal } from "./quotes-modal";
 import { MagicCard } from "@/components/ui/magic-card";
 
-const FREQ_STYLES = [
-  "bg-[hsl(200_55%_18%)] text-[var(--color-analog-1)] border border-[hsl(200_55%_28%)]",
-  "bg-[hsl(200_55%_18%)] text-[var(--color-analog-1)] border border-[hsl(200_55%_28%)]",
-  "bg-[hsl(220_55%_18%)] text-[var(--color-analog-2)] border border-[hsl(220_55%_28%)]",
-  "bg-[hsl(220_55%_18%)] text-[var(--color-analog-2)] border border-[hsl(220_55%_28%)]",
-  "bg-[hsl(240_55%_18%)] text-[var(--color-analog-3)] border border-[hsl(240_55%_28%)]",
-];
+const SIGNAL_STYLES: Record<string, string> = {
+  high: "bg-[hsl(142_55%_13%)] text-[hsl(142_60%_55%)] border border-[hsl(142_45%_25%)]",
+  medium: "bg-[hsl(200_55%_18%)] text-[var(--color-analog-1)] border border-[hsl(200_55%_28%)]",
+  low: "bg-[hsl(40_40%_12%)] text-[hsl(40_70%_65%)] border border-[hsl(40_40%_28%)]",
+};
+
+function signalBadgeLabel(strength: string | null, frequency: string): string {
+  const level = strength === "high" ? "High signal"
+    : strength === "medium" ? "Medium signal"
+    : strength === "low" ? "Low signal"
+    : null;
+  if (!level) return frequency;
+  return `${level} — ${frequency}`;
+}
+
+function signalBadgeStyle(strength: string | null): string {
+  return SIGNAL_STYLES[strength ?? ""] ?? SIGNAL_STYLES.medium;
+}
 
 interface ThemesSectionProps {
   insights: Insight[];
@@ -49,15 +60,10 @@ export function ThemesSection({ insights, isStale }: ThemesSectionProps) {
                   Conflicting signals
                 </span>
               )}
-              {insight.signal_strength === "low" && !insight.has_conflict && (
-                <span className="rounded-[var(--radius-pill)] border border-[hsl(40_40%_28%)] bg-[hsl(40_40%_12%)] px-2.5 py-0.5 text-[11px] font-semibold text-[hsl(40_70%_65%)]">
-                  Low signal
-                </span>
-              )}
               <span
-                className={`rounded-[var(--radius-pill)] px-2.5 py-0.5 text-[11px] font-semibold ${FREQ_STYLES[i] ?? FREQ_STYLES[4]}`}
+                className={`rounded-[var(--radius-pill)] px-2.5 py-0.5 text-[11px] font-semibold ${signalBadgeStyle(insight.signal_strength)}`}
               >
-                {insight.frequency}
+                {signalBadgeLabel(insight.signal_strength, insight.frequency)}
               </span>
             </div>
 

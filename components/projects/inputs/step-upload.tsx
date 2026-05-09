@@ -27,6 +27,8 @@ interface StepUploadProps {
   sourceLabel: string;
   onSourceLabelChange: (v: string) => void;
   sourceLabelError: string | null;
+  customerNotes: string;
+  onCustomerNotesChange: (v: string) => void;
   onBack: () => void;
   onSubmit: () => void;
   isSubmitting: boolean;
@@ -40,6 +42,8 @@ export function StepUpload({
   sourceLabel,
   onSourceLabelChange,
   sourceLabelError,
+  customerNotes,
+  onCustomerNotesChange,
   onBack,
   onSubmit,
   isSubmitting,
@@ -201,6 +205,26 @@ export function StepUpload({
             {sourceLabelError}
           </p>
         )}
+      </div>
+
+      <div>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[11px] font-medium uppercase tracking-[0.07em] text-[var(--color-text-tertiary)]">
+            Customer context
+            <span className="ml-1.5 normal-case font-normal tracking-normal text-[var(--color-text-disabled)]">optional</span>
+          </p>
+        </div>
+        <p className="mb-2 text-[11px] text-[var(--color-text-tertiary)] leading-relaxed">
+          For best results, note who this feedback is from — e.g. paying tier, how long they&apos;ve been a customer, ARR, or any other signal of value. The AI uses this to weight high-value feedback more heavily.
+        </p>
+        <textarea
+          value={customerNotes}
+          onChange={(e) => onCustomerNotesChange(e.target.value)}
+          placeholder="e.g. Enterprise customers, 2+ years, $50k+ ARR — or — Mix of free and paying users"
+          maxLength={500}
+          rows={2}
+          className="w-full resize-none rounded-[var(--radius-sm)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-1)] px-3.5 py-2.5 text-[13px] text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-tertiary)] focus:border-[var(--color-accent-primary)]/50 focus:ring-2 focus:ring-[var(--color-accent-primary)]/20"
+        />
       </div>
 
       <div className="flex items-center justify-between">
