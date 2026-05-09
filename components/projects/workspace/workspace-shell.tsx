@@ -194,7 +194,7 @@ export function WorkspaceShell({
       {/* Action buttons row */}
       <div className="mb-7 flex items-center justify-end gap-2">
         {addInputsButton}
-        <div className="flex flex-col items-end gap-1">
+        <div className="relative">
           <AnalyzeButton
             projectId={projectId}
             hasInputs={hasInputs}
@@ -205,7 +205,7 @@ export function WorkspaceShell({
             onRefresh={handleRefresh}
           />
           {hasInputs && !isAnalyzing && (
-            <span className="text-[11px] text-[var(--color-text-tertiary)]">
+            <span className="absolute right-0 top-full mt-1 whitespace-nowrap text-[11px] text-[var(--color-text-tertiary)]">
               Analysis may take 30–60 s
             </span>
           )}
