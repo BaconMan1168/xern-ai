@@ -40,6 +40,7 @@ export function AddInputForm({
   const [pasteContent, setPasteContent] = useState("");
   const [sourceLabel, setSourceLabel] = useState("");
   const [sourceLabelError, setSourceLabelError] = useState<string | null>(null);
+  const [customerNotes, setCustomerNotes] = useState("");
   const [submitResult, setSubmitResult] = useState<UploadResult | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -62,6 +63,7 @@ export function AddInputForm({
     setPasteContent("");
     setSourceLabel("");
     setSourceLabelError(null);
+    setCustomerNotes("");
     setSubmitResult(null);
     setServerError(null);
   };
@@ -82,12 +84,14 @@ export function AddInputForm({
             projectId,
             sourceType: sourceLabel,
             content: pasteContent,
+            customerNotes: customerNotes || undefined,
           });
           setSubmitResult({ succeeded: [record], failed: [] });
         } else {
           const formData = new FormData();
           formData.append("project_id", projectId);
           formData.append("source_type", sourceLabel);
+          formData.append("customer_notes", customerNotes);
           files.forEach((f) => formData.append("files", f));
           const result = await uploadFeedbackFiles(formData);
           setSubmitResult(result);
@@ -205,6 +209,8 @@ export function AddInputForm({
                 sourceLabel={sourceLabel}
                 onSourceLabelChange={setSourceLabel}
                 sourceLabelError={sourceLabelError}
+                customerNotes={customerNotes}
+                onCustomerNotesChange={setCustomerNotes}
                 onBack={goToStep1}
                 onSubmit={handleSubmit}
                 isSubmitting={isPending}
@@ -216,6 +222,8 @@ export function AddInputForm({
                 sourceLabel={sourceLabel}
                 onSourceLabelChange={setSourceLabel}
                 sourceLabelError={sourceLabelError}
+                customerNotes={customerNotes}
+                onCustomerNotesChange={setCustomerNotes}
                 onBack={goToStep1}
                 onSubmit={handleSubmit}
                 isSubmitting={isPending}

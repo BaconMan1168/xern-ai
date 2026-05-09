@@ -65,6 +65,9 @@ export async function uploadFeedbackFiles(
   );
   if (!sourceType) throw new Error("Source label is required");
 
+  const rawNotes = (formData.get("customer_notes") as string | null) ?? "";
+  const customerNotes = rawNotes.trim().slice(0, 500) || null;
+
   const files = formData.getAll("files") as File[];
   const succeeded: FeedbackFile[] = [];
   const failed: { name: string; error: string }[] = [];
@@ -116,6 +119,7 @@ export async function uploadFeedbackFiles(
           mime_type: mimeType,
           input_method: "upload",
           word_count: countWords(content),
+          customer_notes: customerNotes,
         })
         .select()
         .single();
@@ -144,6 +148,7 @@ export async function pasteFeedbackText(data: {
   projectId: string;
   sourceType: string;
   content: string;
+  customerNotes?: string;
 }): Promise<FeedbackFile> {
   const supabase = await createClient();
   const {
@@ -168,6 +173,8 @@ export async function pasteFeedbackText(data: {
     );
   }
 
+  const customerNotes = data.customerNotes?.trim().slice(0, 500) || null;
+
   const { data: record, error } = await supabase
     .from("feedback_files")
     .insert({
@@ -179,6 +186,7 @@ export async function pasteFeedbackText(data: {
       mime_type: null,
       input_method: "paste",
       word_count: countWords(content),
+      customer_notes: customerNotes,
     })
     .select()
     .single();

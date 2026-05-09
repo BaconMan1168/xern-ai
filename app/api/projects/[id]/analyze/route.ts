@@ -82,18 +82,10 @@ export async function POST(
     const { themes } = await synthesize(files);
     console.log(`[analyze] synthesize() done in ${Date.now() - synthStart}ms — ${themes.length} theme(s)`);
 
-    // Insufficient signal — persist empty results and return early
+    // Insufficient signal — return early WITHOUT persisting an analysis_runs row.
+    // Free users should not burn a slot when there was nothing actionable to surface.
     if (themes.length === 0) {
-      const persistStart = Date.now();
-      await persistAnalysisResults({
-        projectId,
-        userId: user.id,
-        themes: [],
-        proposals: [],
-        inputCount: files.length,
-      });
-      console.log(`[analyze] persistAnalysisResults (empty) done in ${Date.now() - persistStart}ms`);
-      console.log(`[analyze] total route duration: ${Date.now() - routeStart}ms`);
+      console.log(`[analyze] insufficient signal — skipping persist. total: ${Date.now() - routeStart}ms`);
       return Response.json({ signal: "insufficient", insightCount: 0, proposalCount: 0 });
     }
 

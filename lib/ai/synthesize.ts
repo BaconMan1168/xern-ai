@@ -24,14 +24,21 @@ Rules:
 - Prefer meaningful recurring pain points over one-off comments.
 - Return AT MOST 5 themes, ranked by frequency and signal strength (strongest first).
 
+Customer quality weighting:
+- Each source may include a "Customer context" note describing the customer segment (e.g. paying tier, tenure, ARR, or other value signals).
+- Weight feedback from higher-value customers (paying, long-tenured, enterprise, high-ARR) more heavily when assessing theme importance and signal strength.
+- A single piece of feedback from a high-value customer can outweigh many pieces from free or trial users.
+- Feedback with no customer context should be treated as neutral/unknown value — do not assume it is high or low value.
+- Distinguish between loud-but-low-value feedback (many free users saying the same thing) and quiet-but-high-value feedback (a few enterprise customers raising a critical issue). The latter should rank higher.
+
 STRICT low-signal rule — return an empty themes array (no themes at all) if ANY of the following apply:
 - The feedback is too vague, too short, or too generic to identify actionable product patterns (e.g. single words, filler text, lorem ipsum, test data, non-product content).
 - The content does not constitute real product feedback (e.g. it is a random document, marketing copy, or unrelated text).
 When in doubt, return empty. Do not invent or stretch themes to fill the output.
 
 Signal strength assessment (set signalStrength per theme):
-- "high": theme appears across multiple sources with specific, actionable feedback
-- "medium": theme has some support but limited sources or vague comments
+- "high": theme appears across multiple sources with specific, actionable feedback — or raised by high-value customers even if fewer in number
+- "medium": theme has some support but limited sources or vague comments — or raised only by lower-value/unknown-tier customers
 - "low": theme is based on a single source, very brief/ambiguous comments, or weak evidence
 
 Conflict detection (set hasConflict per theme):
@@ -39,14 +46,17 @@ Conflict detection (set hasConflict per theme):
 - Do not flag as conflict when sources merely vary in intensity or emphasis on the same problem.
 - Set hasConflict to false for all other themes.
 
-Return a structured result with themes containing themeName, frequency (human-readable string like "6 of 8 sources"), representative quotes with source labels, signalStrength, and hasConflict.`;
+Return a structured result with themes containing themeName, frequency (MUST follow the exact format "X of Y sources" — e.g. "3 of 5 sources" — no other format is acceptable), representative quotes with source labels, signalStrength, and hasConflict.`;
 
 function buildUserPrompt(files: FeedbackFile[]): string {
   const sections = files
-    .map(
-      (f, i) =>
-        `--- Source ${i + 1}: ${f.source_type} ---\n${f.content.trim()}`
-    )
+    .map((f, i) => {
+      const header = `--- Source ${i + 1}: ${f.source_type} ---`;
+      const contextLine = f.customer_notes
+        ? `Customer context: ${f.customer_notes}`
+        : "";
+      return [header, contextLine, f.content.trim()].filter(Boolean).join("\n");
+    })
     .join("\n\n");
 
   return `Analyze the following ${files.length} feedback input(s) and identify recurring themes:\n\n${sections}`;

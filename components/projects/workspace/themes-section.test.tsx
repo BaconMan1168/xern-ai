@@ -38,8 +38,9 @@ describe("ThemesSection", () => {
     expect(screen.getByText("CSV export missing")).toBeInTheDocument();
   });
 
-  it("renders frequency badge for each theme", () => {
+  it("renders unified signal badge with frequency", () => {
     render(<ThemesSection insights={[makeInsight("i1", "Theme A")]} isStale={false} />);
+    // null signal_strength falls back to the raw frequency string
     expect(screen.getByText("3 of 5 sources")).toBeInTheDocument();
   });
 
@@ -59,19 +60,19 @@ describe("ThemesSection", () => {
     expect(screen.getByText(/view all 2 quotes/i)).toBeInTheDocument();
   });
 
-  it("shows 'Low signal' badge when signal_strength is low", () => {
+  it("shows 'Low signal — X of Y sources' badge when signal_strength is low", () => {
     render(<ThemesSection insights={[makeInsight("i1", "App reminders", "low")]} isStale={false} />);
-    expect(screen.getByText("Low signal")).toBeInTheDocument();
+    expect(screen.getByText("Low signal — 3 of 5 sources")).toBeInTheDocument();
   });
 
-  it("does not show 'Low signal' badge when signal_strength is high", () => {
+  it("shows 'High signal — X of Y sources' badge when signal_strength is high", () => {
     render(<ThemesSection insights={[makeInsight("i1", "Onboarding confusion", "high")]} isStale={false} />);
-    expect(screen.queryByText("Low signal")).not.toBeInTheDocument();
+    expect(screen.getByText("High signal — 3 of 5 sources")).toBeInTheDocument();
   });
 
-  it("does not show 'Low signal' badge when signal_strength is null", () => {
+  it("shows raw frequency when signal_strength is null", () => {
     render(<ThemesSection insights={[makeInsight("i1", "Old theme", null)]} isStale={false} />);
-    expect(screen.queryByText("Low signal")).not.toBeInTheDocument();
+    expect(screen.getByText("3 of 5 sources")).toBeInTheDocument();
   });
 
   it("shows 'Conflicting signals' badge when has_conflict is true", () => {
@@ -79,10 +80,11 @@ describe("ThemesSection", () => {
     expect(screen.getByText("Conflicting signals")).toBeInTheDocument();
   });
 
-  it("does not show 'Low signal' badge when has_conflict is true (conflict takes precedence)", () => {
+  it("still shows unified signal badge alongside conflict badge", () => {
     render(<ThemesSection insights={[makeInsight("i1", "UX speed", "low", true)]} isStale={false} />);
     expect(screen.getByText("Conflicting signals")).toBeInTheDocument();
-    expect(screen.queryByText("Low signal")).not.toBeInTheDocument();
+    // The unified badge still renders the signal+frequency even when conflict is set
+    expect(screen.getByText("Low signal — 3 of 5 sources")).toBeInTheDocument();
   });
 
   it("does not show 'Conflicting signals' badge when has_conflict is false", () => {

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useTransition } from "react";
+import { useState, useEffect, useCallback, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Search, Star, Info } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { AnalyzeButton } from "./analyze-button";
 import { InputsSection } from "./inputs-section";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
@@ -26,23 +27,87 @@ interface WorkspaceShellProps {
   proposalsContent: React.ReactNode;
 }
 
-function PulseSkeleton() {
+// Stages driven by elapsed time (ms thresholds)
+const STAGES = [
+  { after: 0,     label: "Reading feedback…" },
+  { after: 12000, label: "Synthesizing themes…" },
+  { after: 28000, label: "Generating proposals…" },
+  { after: 50000, label: "Almost done, hang tight…" },
+] as const;
+
+function getStageLabel(elapsed: number): string {
+  const stage = [...STAGES].reverse().find((s) => elapsed >= s.after) ?? STAGES[0];
+  return stage.label;
+}
+
+function useAnalysisStage(active: boolean) {
+  // Label is updated only inside timer callbacks — never synchronously in the effect body.
+  const [label, setLabel] = useState<string>(STAGES[0].label);
+
+  useEffect(() => {
+    if (!active) return;
+    const start = performance.now();
+    // Defer the reset so it runs in a timer callback, not synchronously in the effect body.
+    const resetId = setTimeout(() => setLabel(STAGES[0].label), 0);
+    const id = setInterval(() => {
+      setLabel(getStageLabel(performance.now() - start));
+    }, 1000);
+    return () => {
+      clearTimeout(resetId);
+      clearInterval(id);
+    };
+  }, [active]);
+
+  return label;
+}
+
+function AnalysisProgress({ label }: { label: string }) {
   return (
-    <div className="flex flex-col gap-2.5 animate-pulse">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-0)] p-5"
-          style={{ opacity: 1 - i * 0.2 }}
-        >
-          <div className="mb-3 flex items-center gap-3">
-            <div className="h-4 flex-1 rounded-[var(--radius-sm)] bg-[var(--color-surface-2)]" />
-            <div className="h-4 w-20 rounded-[var(--radius-pill)] bg-[var(--color-surface-2)]" />
+    <div className="flex flex-col gap-4">
+      {/* Progress bar */}
+      <div className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--color-surface-2)]">
+        <motion.div
+          className="h-full rounded-full bg-[var(--color-accent-primary)]"
+          initial={{ width: "4%" }}
+          animate={{ width: "92%" }}
+          transition={{ duration: 55, ease: "easeInOut" }}
+        />
+      </div>
+
+      {/* Status label */}
+      <div className="flex items-center gap-2">
+        <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent-primary)]" />
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={label}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[13px] text-[var(--color-text-secondary)]"
+          >
+            {label}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+
+      {/* Skeleton cards */}
+      <div className="flex flex-col gap-2.5 animate-pulse">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="rounded-[var(--radius-lg)] border border-[var(--color-border-subtle)] bg-[var(--color-surface-0)] p-5"
+            style={{ opacity: 1 - i * 0.2 }}
+          >
+            <div className="mb-3 flex items-center gap-3">
+              <div className="h-4 flex-1 rounded-[var(--radius-sm)] bg-[var(--color-surface-2)]" />
+              <div className="h-4 w-20 rounded-[var(--radius-pill)] bg-[var(--color-surface-2)]" />
+            </div>
+            <div className="h-3 w-4/5 rounded-[var(--radius-sm)] bg-[var(--color-surface-1)]" />
+            <div className="mt-1.5 h-3 w-3/5 rounded-[var(--radius-sm)] bg-[var(--color-surface-1)]" />
           </div>
-          <div className="h-3 w-4/5 rounded-[var(--radius-sm)] bg-[var(--color-surface-1)]" />
-          <div className="mt-1.5 h-3 w-3/5 rounded-[var(--radius-sm)] bg-[var(--color-surface-1)]" />
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -71,6 +136,7 @@ export function WorkspaceShell({
   //   isAnalyzing      — API call in flight (before router.refresh)
   //   isPendingRefresh — RSC re-fetch in flight (after router.refresh)
   const showSkeleton = isAnalyzing || isPendingRefresh;
+  const stageLabel = useAnalysisStage(isAnalyzing);
 
   // Passed to AnalyzeButton so it can trigger the refresh without owning the router.
   const handleRefresh = useCallback(() => {
@@ -128,15 +194,22 @@ export function WorkspaceShell({
       {/* Action buttons row */}
       <div className="mb-7 flex items-center justify-end gap-2">
         {addInputsButton}
-        <AnalyzeButton
-          projectId={projectId}
-          hasInputs={hasInputs}
-          isStale={isStale}
-          hasResults={hasResults}
-          canRerun={canRerun}
-          onAnalyzingChange={setIsAnalyzing}
-          onRefresh={handleRefresh}
-        />
+        <div className="flex flex-col items-end gap-1">
+          <AnalyzeButton
+            projectId={projectId}
+            hasInputs={hasInputs}
+            isStale={isStale}
+            hasResults={hasResults}
+            canRerun={canRerun}
+            onAnalyzingChange={setIsAnalyzing}
+            onRefresh={handleRefresh}
+          />
+          {hasInputs && !isAnalyzing && (
+            <span className="text-[11px] text-[var(--color-text-tertiary)]">
+              Analysis may take 30–60 s
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="h-px bg-[var(--color-border-subtle)]" />
@@ -197,7 +270,7 @@ export function WorkspaceShell({
             </p>
           </div>
         )}
-        {showSkeleton ? <PulseSkeleton /> : themesContent}
+        {showSkeleton ? <AnalysisProgress label={stageLabel} /> : themesContent}
       </div>
 
       <div className="h-px bg-[var(--color-border-subtle)]" />
@@ -242,7 +315,7 @@ export function WorkspaceShell({
             </p>
           </div>
         )}
-        {showSkeleton ? <PulseSkeleton /> : proposalsContent}
+        {showSkeleton ? null : proposalsContent}
       </div>
     </>
   );

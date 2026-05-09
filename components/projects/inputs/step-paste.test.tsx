@@ -26,6 +26,8 @@ const baseProps = {
   sourceLabel: "",
   onSourceLabelChange: vi.fn(),
   sourceLabelError: null,
+  customerNotes: "",
+  onCustomerNotesChange: vi.fn(),
   onBack: vi.fn(),
   onSubmit: vi.fn(),
   isSubmitting: false,
